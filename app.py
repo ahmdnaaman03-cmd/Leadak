@@ -2,76 +2,35 @@ import os
 import requests
 import streamlit as st
 
-st.set_page_config(page_title="LeadAK", layout="centered")
+st.set_page_config(page_title="LeadAK", layout="centered", initial_sidebar_state="collapsed")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #F8FAFC; font-family: 'Helvetica Neue', Arial, sans-serif; }
-    h1 { color: #0F4C81 !important; font-weight: 400 !important; margin-bottom: -10px; }
-    .caption-text { color: #64748B; font-size: 14px; margin-bottom: 2rem; }
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div { 
-        background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; box-shadow: none; 
-    }
-    .stButton>button {
-        width: 100%; background-color: #0F4C81; color: #FFFFFF; 
-        font-weight: 500; border-radius: 4px; height: 3em; border: none; transition: 0.2s;
-    }
+    .stApp { background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .brand-title { font-size: 24px; font-weight: 600; color: #0F4C81; letter-spacing: -0.5px; margin-bottom: 2rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; }
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea { background-color: #FFFFFF !important; color: #0F4C81 !important; border: 1px solid #CBD5E1 !important; border-radius: 6px !important; padding: 10px !important; }
+    .stSelectbox>div>div>div { background-color: #FFFFFF !important; color: #0F4C81 !important; border: 1px solid #CBD5E1 !important; border-radius: 6px !important; }
+    .stButton>button { width: 100%; background-color: #0F4C81; color: #FFFFFF; font-weight: 500; border-radius: 6px; height: 3.2em; border: none; transition: 0.2s; }
     .stButton>button:hover { background-color: #1A5F7A; color: #FFFFFF; }
     div[data-testid="stExpander"] { background-color: transparent; border: none; box-shadow: none; }
+    .footer-copyright { text-align: center; color: #94A3B8; font-size: 12px; margin-top: 3rem; border-top: 1px solid #E2E8F0; padding-top: 15px; letter-spacing: 0.5px; }
     </style>
 """, unsafe_allow_html=True)
 
 lang = st.radio("Language", ["English", "العربية"], horizontal=True, label_visibility="collapsed")
 
 if lang == "العربية":
-    T = {
-        "title": "LeadAK Prospector",
-        "caption": "صياغة رسائل التواصل الاحترافية للمبيعات",
-        "target": "الجهة المستهدفة (اسم العميل أو الشركة)",
-        "target_ph": "مثال: د. أحمد - مدير استثمار، أو شركة إعمار",
-        "ind": "مجال العمل",
-        "ind_ph": "مثال: التطوير العقاري",
-        "post": "السياق أو المنشور الأخير",
-        "post_ph": "أعلنوا عن التوسع في مشاريع جديدة...",
-        "adv": "خيارات إضافية",
-        "tone": "نبرة الرسالة",
-        "tones": ["احترافي ومباشر", "ودود", "رسمي"],
-        "platform": "قناة التواصل",
-        "platforms": ["LinkedIn InMail", "Email", "WhatsApp"],
-        "btn": "توليد الرسالة",
-        "err": "يرجى التأكد من المفتاح والبيانات المدخلة.",
-        "wait": "جاري المعالجة...",
-        "res": "الرسالة الجاهزة:"
-    }
+    T = {"title": "LeadAK", "target": "الجهة المستهدفة", "target_ph": "مثال: د. أحمد - مدير استثمار", "ind": "مجال العمل", "ind_ph": "مثال: التطوير العقاري", "post": "السياق أو الأنشطة الأخيرة", "post_ph": "أعلنوا عن التوسع في مشاريع جديدة...", "adv": "خيارات متقدمة", "tone": "نبرة الرسالة", "tones": ["احترافي ومباشر", "ودود", "رسمي"], "platform": "القناة", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "إنشاء الرسالة", "err": "يرجى إدخال البيانات المطلوبة وتأكد من المفتاح.", "wait": "جاري المعالجة...", "res": "النتيجة النهائية:", "footer": "© 2026 LeadAK. All rights reserved."}
 else:
-    T = {
-        "title": "LeadAK Prospector",
-        "caption": "Enterprise Outreach & Sales Message Generator",
-        "target": "Target Name (Person or Company)",
-        "target_ph": "e.g., Dr. Ahmed - CEO, or Emaar Properties",
-        "ind": "Industry",
-        "ind_ph": "e.g., Real Estate",
-        "post": "Context / Recent Activity",
-        "post_ph": "They recently announced a new project...",
-        "adv": "Advanced Options",
-        "tone": "Tone",
-        "tones": ["Professional", "Friendly", "Formal"],
-        "platform": "Channel",
-        "platforms": ["LinkedIn InMail", "Email", "WhatsApp"],
-        "btn": "Generate Message",
-        "err": "Please check API key and input fields.",
-        "wait": "Processing...",
-        "res": "Generated Message:"
-    }
+    T = {"title": "LeadAK", "target": "Target Name", "target_ph": "e.g., Dr. Ahmed - CEO", "ind": "Industry", "ind_ph": "e.g., Real Estate", "post": "Context / Recent Activity", "post_ph": "They recently announced...", "adv": "Advanced Options", "tone": "Tone", "tones": ["Professional", "Friendly", "Formal"], "platform": "Channel", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "Generate Message", "err": "Please check input fields and API key.", "wait": "Processing...", "res": "Generated Message:", "footer": "© 2026 LeadAK. All rights reserved."}
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 
-st.markdown(f"<h1>{T['title']}</h1>", unsafe_allow_html=True)
-st.markdown(f"<div class='caption-text'>{T['caption']}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='brand-title'>{T['title']}</div>", unsafe_allow_html=True)
 
 target_name = st.text_input(T["target"], placeholder=T["target_ph"])
 industry = st.text_input(T["ind"], placeholder=T["ind_ph"])
-post_content = st.text_area(T["post"], placeholder=T["post_ph"], height=100)
+post_content = st.text_area(T["post"], placeholder=T["post_ph"], height=90)
 
 with st.expander(T["adv"]):
     col1, col2 = st.columns(2)
@@ -93,8 +52,10 @@ if st.button(T["btn"]):
                 res = requests.post(url, json=payload, timeout=45)
                 if res.status_code == 200:
                     ans = res.json()['candidates'][0]['content']['parts'][0]['text']
-                    st.text_area(T["res"], value=ans, height=200)
+                    st.text_area(T["res"], value=ans, height=180)
                 else:
                     st.error("Error connecting to the model.")
             except Exception:
                 st.error("Connection failed.")
+
+st.markdown(f"<div class='footer-copyright'>{T['footer']}</div>", unsafe_allow_html=True)
