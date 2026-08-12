@@ -1,100 +1,100 @@
 import os
-import json
 import requests
 import streamlit as st
 
-st.set_page_config(
-    page_title="LeadAK - Prospecting",
-    page_icon="🎯",
-    layout="centered"
-)
+st.set_page_config(page_title="LeadAK", layout="centered")
 
 st.markdown("""
     <style>
-    .main { padding: 2rem; }
-    .stButton>button {
-        width: 100%;
-        background-color: #0A66C2;
-        color: white;
-        font-weight: bold;
-        border-radius: 8px;
-        height: 3em;
+    .stApp { background-color: #F8FAFC; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    h1 { color: #0F4C81 !important; font-weight: 400 !important; margin-bottom: -10px; }
+    .caption-text { color: #64748B; font-size: 14px; margin-bottom: 2rem; }
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea, .stSelectbox>div>div>div { 
+        background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 4px; box-shadow: none; 
     }
+    .stButton>button {
+        width: 100%; background-color: #0F4C81; color: #FFFFFF; 
+        font-weight: 500; border-radius: 4px; height: 3em; border: none; transition: 0.2s;
+    }
+    .stButton>button:hover { background-color: #1A5F7A; color: #FFFFFF; }
+    div[data-testid="stExpander"] { background-color: transparent; border: none; box-shadow: none; }
     </style>
 """, unsafe_allow_html=True)
 
+lang = st.radio("Language", ["English", "العربية"], horizontal=True, label_visibility="collapsed")
+
+if lang == "العربية":
+    T = {
+        "title": "LeadAK Prospector",
+        "caption": "صياغة رسائل التواصل الاحترافية للمبيعات",
+        "target": "الجهة المستهدفة (اسم العميل أو الشركة)",
+        "target_ph": "مثال: د. أحمد - مدير استثمار، أو شركة إعمار",
+        "ind": "مجال العمل",
+        "ind_ph": "مثال: التطوير العقاري",
+        "post": "السياق أو المنشور الأخير",
+        "post_ph": "أعلنوا عن التوسع في مشاريع جديدة...",
+        "adv": "خيارات إضافية",
+        "tone": "نبرة الرسالة",
+        "tones": ["احترافي ومباشر", "ودود", "رسمي"],
+        "platform": "قناة التواصل",
+        "platforms": ["LinkedIn InMail", "Email", "WhatsApp"],
+        "btn": "توليد الرسالة",
+        "err": "يرجى التأكد من المفتاح والبيانات المدخلة.",
+        "wait": "جاري المعالجة...",
+        "res": "الرسالة الجاهزة:"
+    }
+else:
+    T = {
+        "title": "LeadAK Prospector",
+        "caption": "Enterprise Outreach & Sales Message Generator",
+        "target": "Target Name (Person or Company)",
+        "target_ph": "e.g., Dr. Ahmed - CEO, or Emaar Properties",
+        "ind": "Industry",
+        "ind_ph": "e.g., Real Estate",
+        "post": "Context / Recent Activity",
+        "post_ph": "They recently announced a new project...",
+        "adv": "Advanced Options",
+        "tone": "Tone",
+        "tones": ["Professional", "Friendly", "Formal"],
+        "platform": "Channel",
+        "platforms": ["LinkedIn InMail", "Email", "WhatsApp"],
+        "btn": "Generate Message",
+        "err": "Please check API key and input fields.",
+        "wait": "Processing...",
+        "res": "Generated Message:"
+    }
+
 API_KEY = os.getenv("GEMINI_API_KEY")
 
-def get_working_model(api_key):
-    if not api_key:
-        return "models/gemma-2-2b-it"
-    list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-    try:
-        res = requests.get(list_url, timeout=15)
-        if res.status_code == 200:
-            models = res.json().get('models', [])
-            for m in models:
-                name = m.get('name', '')
-                if 'gemma' in name.lower() and 'generateContent' in m.get('supportedGenerationMethods', []):
-                    return name if name.startswith("models/") else f"models/{name}"
-            for m in models:
-                if 'generateContent' in m.get('supportedGenerationMethods', []):
-                    name = m.get('name', '')
-                    return name if name.startswith("models/") else f"models/{name}"
-    except Exception:
-        pass
-    return "models/gemma-2-2b-it"
-st.title("🎯 LeadAK Prospector Pro")
-st.caption("أداة صياغة رسائل التواصل المخصصة بناءً على نشاط LinkedIn")
-st.divider()
+st.markdown(f"<h1>{T['title']}</h1>", unsafe_allow_html=True)
+st.markdown(f"<div class='caption-text'>{T['caption']}</div>", unsafe_allow_html=True)
 
-st.subheader("📋 بيانات العميل المستهدف")
-target_type = st.radio("نوع الهدف:", ["شخص (VIP)", "شركة (Business)"], horizontal=True)
+target_name = st.text_input(T["target"], placeholder=T["target_ph"])
+industry = st.text_input(T["ind"], placeholder=T["ind_ph"])
+post_content = st.text_area(T["post"], placeholder=T["post_ph"], height=100)
 
-if "شخص" in target_type:
-    lead_name = st.text_input("اسم الشخص والمنصب:", placeholder="مثال: د. أحمد - مدير الاستثمار")
-    industry = st.text_input("المجال:", placeholder="مثال: التطوير العقاري")
-    post_content = st.text_area("مضمون أحدث منشور له:", placeholder="كتب منشوراً عن التوسع...")
-else:
-    lead_name = st.text_input("اسم الشركة:", placeholder="مثال: شركة إعمار")
-    industry = st.text_input("المجال:", placeholder="مثال: عقارات تجارية")
-    post_content = st.text_area("أحدث منشور للشركة:", placeholder="أعلنوا عن افتتاح فرع جديد...")
+with st.expander(T["adv"]):
+    col1, col2 = st.columns(2)
+    with col1:
+        tone = st.selectbox(T["tone"], T["tones"])
+    with col2:
+        platform = st.selectbox(T["platform"], T["platforms"])
 
-st.subheader("⚙️ إعدادات الرسالة")
-col_tone, col_platform = st.columns(2)
-with col_tone:
-    tone = st.selectbox("النبرة:", ["احترافي ومباشر", "ودود واحترافي", "رسمي جداً (VIP)", "مختصر ومحفز"])
-with col_platform:
-    platform = st.selectbox("القناة:", ["LinkedIn InMail", "WhatsApp Message", "Cold Email"])
-if st.button("🚀 توليد الرسالة المخصصة"):
-    if not API_KEY:
-        st.error("مفتاح API غير متوفر!")
-    elif not lead_name or not post_content:
-        st.warning("يرجى إدخال اسم العميل والمنشور.")
+if st.button(T["btn"]):
+    if not API_KEY or not target_name or not post_content:
+        st.error(T["err"])
     else:
-        with st.spinner("جاري التوليد..."):
-            MODEL_NAME = get_working_model(API_KEY)
-            prompt = f"""
-            أنت خبير مبيعات B2B. اكتب رسالة مخصصة لـ ({target_type}) لفتح باب حوار بيعي.
-            البيانات:
-            - الهدف: {lead_name} | المجال: {industry}
-            - المنشور الأخير: {post_content}
-            - النبرة: {tone} | القناة: {platform}
-
-            التعليمات:
-            1. اذكر ما ورد في منشوره بذكاء لتأكيد التخصيص.
-            2. اربط بين كلامه وبين فرصة التعاون بأسلوب سلس.
-            3. انهِ بدعوة بسيطة للتواصل (CTA).
-            """
-            url = f"https://generativelanguage.googleapis.com/v1beta/{MODEL_NAME}:generateContent?key={API_KEY}"
+        with st.spinner(T["wait"]):
+            output_lang = "Arabic" if lang == "العربية" else "English"
+            prompt = f'''You are a senior B2B Sales Specialist. Write a highly personalized, concise outreach message. Target: {target_name}. Industry: {industry}. Context/Activity: {post_content}. Tone: {tone}. Channel: {platform}. Language: {output_lang}. Rules: No emojis. Keep it highly professional, clean, and minimalist. Mention their context naturally. End with a simple CTA. Provide ONLY the message text.'''
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemma-2-2b-it:generateContent?key={API_KEY}"
             payload = {"contents": [{"parts": [{"text": prompt}]}]}
             try:
                 res = requests.post(url, json=payload, timeout=45)
                 if res.status_code == 200:
                     ans = res.json()['candidates'][0]['content']['parts'][0]['text']
-                    st.success("تم التوليد بنجاح!")
-                    st.text_area("النص الجاهز للنسخ:", value=ans, height=200)
+                    st.text_area(T["res"], value=ans, height=200)
                 else:
-                    st.error(f"خطأ: {res.status_code}")
-            except Exception as e:
-                st.error(f"خطأ في الاتصال: {str(e)}")
+                    st.error("Error connecting to the model.")
+            except Exception:
+                st.error("Connection failed.")
