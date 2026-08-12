@@ -20,9 +20,9 @@ st.markdown("""
 lang = st.radio("Language", ["English", "العربية"], horizontal=True, label_visibility="collapsed")
 
 if lang == "العربية":
-    T = {"title": "LeadAK", "target": "الجهة المستهدفة", "target_ph": "مثال: د. أحمد - مدير استثمار", "ind": "مجال العمل", "ind_ph": "مثال: التطوير العقاري", "post": "السياق أو الأنشطة الأخيرة", "post_ph": "أعلنوا عن التوسع في مشاريع جديدة...", "adv": "خيارات متقدمة", "tone": "نبرة الرسالة", "tones": ["احترافي ومباشر", "ودود", "رسمي"], "platform": "القناة", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "إنشاء الرسالة", "err": "يرجى إدخال البيانات المطلوبة وتأكد من المفتاح.", "wait": "جاري المعالجة...", "res": "النتيجة النهائية:", "footer": "© 2026 LeadAK. All rights reserved."}
+    T = {"title": "LeadAK", "target": "الجهة المستهدفة", "target_ph": "مثال: د. أحمد - مدير استثمار", "ind": "مجال العمل", "ind_ph": "مثال: التطوير العقاري", "post": "السياق أو الأنشطة الأخيرة", "post_ph": "أعلنوا عن التوسع في مشاريع جديدة...", "adv": "خيارات متقدمة", "tone": "نبرة الرسالة", "tones": ["احترافي ومباشر", "ودود", "رسمي"], "platform": "القناة", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "إنشاء الرسالة", "err": "يرجى إدخال البيانات المطلوبة وتأكد من المفتاح.", "wait": "جاري فحص النماذج المتاحة والتوليد...", "res": "النتيجة النهائية:", "footer": "© 2026 LeadAK. All rights reserved."}
 else:
-    T = {"title": "LeadAK", "target": "Target Name", "target_ph": "e.g., Dr. Ahmed - CEO", "ind": "Industry", "ind_ph": "e.g., Real Estate", "post": "Context / Recent Activity", "post_ph": "They recently announced...", "adv": "Advanced Options", "tone": "Tone", "tones": ["Professional", "Friendly", "Formal"], "platform": "Channel", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "Generate Message", "err": "Please check input fields and API key.", "wait": "Processing...", "res": "Generated Message:", "footer": "© 2026 LeadAK. All rights reserved."}
+    T = {"title": "LeadAK", "target": "Target Name", "target_ph": "e.g., Dr. Ahmed - CEO", "ind": "Industry", "ind_ph": "e.g., Real Estate", "post": "Context / Recent Activity", "post_ph": "They recently announced...", "adv": "Advanced Options", "tone": "Tone", "tones": ["Professional", "Friendly", "Formal"], "platform": "Channel", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "Generate Message", "err": "Please check input fields and API key.", "wait": "Checking available models & generating...", "res": "Generated Message:", "footer": "© 2026 LeadAK. All rights reserved."}
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 
@@ -39,14 +39,36 @@ with st.expander(T["adv"]):
     with col2:
         platform = st.selectbox(T["platform"], T["platforms"])
 
+def get_working_model(api_key):
+    try:
+        list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
+        res = requests.get(list_url, timeout=10)
+        if res.status_code == 200:
+            models = res.json().get("models", [])
+            for m in models:
+                name = m.get("name", "")
+                methods = m.get("supportedGenerationMethods", [])
+                if "generateContent" in methods and "flash" in name:
+                    return name.replace("models/", "")
+            for m in models:
+                name = m.get("name", "")
+                methods = m.get("supportedGenerationMethods", [])
+                if "generateContent" in methods:
+                    return name.replace("models/", "")
+    except Exception:
+        pass
+    return "gemini-1.5-flash"
+
 if st.button(T["btn"]):
     if not API_KEY or not target_name or not post_content:
         st.error(T["err"])
     else:
         with st.spinner(T["wait"]):
+            model_name = get_working_model(API_KEY)
             output_lang = "Arabic" if lang == "العربية" else "English"
             prompt = f'''You are a senior B2B Sales Specialist. Write a highly personalized, concise outreach message. Target: {target_name}. Industry: {industry}. Context/Activity: {post_content}. Tone: {tone}. Channel: {platform}. Language: {output_lang}. Rules: No emojis. Keep it highly professional, clean, and minimalist. Mention their context naturally. End with a simple CTA. Provide ONLY the message text.'''
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemma-2-2b-it:generateContent?key={API_KEY}"
+            
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={API_KEY}"
             payload = {"contents": [{"parts": [{"text": prompt}]}]}
             try:
                 res = requests.post(url, json=payload, timeout=45)
@@ -54,7 +76,7 @@ if st.button(T["btn"]):
                     ans = res.json()['candidates'][0]['content']['parts'][0]['text']
                     st.text_area(T["res"], value=ans, height=180)
                 else:
-                    st.error("Error connecting to the model.")
+                    st.error(f"Error connecting to model {model_name}. Code: {res.status_code}")
             except Exception:
                 st.error("Connection failed.")
 
