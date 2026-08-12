@@ -7,37 +7,37 @@ st.set_page_config(page_title="LeadAK", layout="centered", initial_sidebar_state
 st.markdown("""
     <style>
     .stApp { background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    .brand-title { font-size: 24px; font-weight: 600; color: #0F4C81; letter-spacing: -0.5px; margin-bottom: 2rem; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; }
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea { background-color: #FFFFFF !important; color: #0F4C81 !important; border: 1px solid #CBD5E1 !important; border-radius: 6px !important; padding: 10px !important; }
-    .stSelectbox>div>div>div { background-color: #FFFFFF !important; color: #0F4C81 !important; border: 1px solid #CBD5E1 !important; border-radius: 6px !important; }
-    .stButton>button { width: 100%; background-color: #0F4C81; color: #FFFFFF; font-weight: 500; border-radius: 6px; height: 3.2em; border: none; transition: 0.2s; }
-    .stButton>button:hover { background-color: #1A5F7A; color: #FFFFFF; }
-    div[data-testid="stExpander"] { background-color: transparent; border: none; box-shadow: none; }
-    .footer-copyright { text-align: center; color: #94A3B8; font-size: 12px; margin-top: 3rem; border-top: 1px solid #E2E8F0; padding-top: 15px; letter-spacing: 0.5px; }
+    .brand-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 2rem; }
+    .brand-logo { font-size: 24px; font-weight: 700; color: #1E1B4B; letter-spacing: -0.5px; }
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea { background-color: #FFFFFF !important; color: #1E1B4B !important; border: 1px solid #CBD5E1 !important; border-radius: 8px !important; padding: 10px !important; }
+    .stButton>button { width: 100%; background-color: #3730A3; color: #FFFFFF; font-weight: 500; border-radius: 8px; height: 3.4em; border: none; transition: 0.2s; }
+    .stButton>button:hover { background-color: #312E81; color: #FFFFFF; }
+    .footer-copyright { text-align: center; color: #94A3B8; font-size: 12px; margin-top: 3rem; border-top: 1px solid #E2E8F0; padding-top: 15px; }
     </style>
 """, unsafe_allow_html=True)
 
 lang = st.radio("Language", ["English", "العربية"], horizontal=True, label_visibility="collapsed")
 
 if lang == "العربية":
-    T = {"title": "LeadAK", "target": "الجهة المستهدفة", "target_ph": "مثال: د. أحمد - مدير استثمار", "ind": "مجال العمل", "ind_ph": "مثال: التطوير العقاري", "post": "السياق أو الأنشطة الأخيرة", "post_ph": "أعلنوا عن التوسع في مشاريع جديدة...", "adv": "خيارات متقدمة", "tone": "نبرة الرسالة", "tones": ["احترافي ومباشر", "ودود", "رسمي"], "platform": "القناة", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "إنشاء الرسالة", "err": "يرجى إدخال البيانات المطلوبة وتأكد من المفتاح.", "wait": "جاري فحص النماذج المتاحة والتوليد...", "res": "النتيجة النهائية:", "footer": "© 2026 LeadAK. All rights reserved."}
+    T = {"title": "LeadAK", "heading": "أنشئ رسالة تحقق التحويل المستهدف", "subheading": "أدخل بعض التفاصيل وسيقوم الذكاء الاصطناعي بصياغة الرسالة المثالية لجمهورك.", "target": "الجهة المستهدفة", "target_ph": "اسم الشخص أو الشركة المستهدفة", "ind": "مجال العمل / المنتج / الخدمة", "ind_ph": "مثال: التطوير العقاري أو SaaS", "post": "النشاط أو المنشور الأخير للعميل", "post_ph": "الصق منشور العميل الأخير هنا...", "post_sub": "سيقوم الذكاء الاصطناعي بتحليل المنشور وإنشاء رسالة مخصصة.", "btn": "إنشاء الرسالة", "err": "يرجى إدخال البيانات المطلوبة وتأكد من المفتاح.", "wait": "جاري التحليل والإنشاء...", "res": "النتيجة النهائية:", "footer": "© 2026 LeadAK. All rights reserved."}
 else:
-    T = {"title": "LeadAK", "target": "Target Name", "target_ph": "e.g., Dr. Ahmed - CEO", "ind": "Industry", "ind_ph": "e.g., Real Estate", "post": "Context / Recent Activity", "post_ph": "They recently announced...", "adv": "Advanced Options", "tone": "Tone", "tones": ["Professional", "Friendly", "Formal"], "platform": "Channel", "platforms": ["LinkedIn InMail", "Email", "WhatsApp"], "btn": "Generate Message", "err": "Please check input fields and API key.", "wait": "Checking available models & generating...", "res": "Generated Message:", "footer": "© 2026 LeadAK. All rights reserved."}
+    T = {"title": "LeadAK", "heading": "Generate a Message That Converts", "subheading": "Provide a few details and AI will craft the perfect message for your audience.", "target": "Target Name", "target_ph": "Person or Company name", "ind": "Company / Product / Service", "ind_ph": "e.g., Real Estate or SaaS", "post": "Client's Latest Post", "post_ph": "Paste the client's latest post here...", "post_sub": "AI will analyze this post and create a personalized message.", "btn": "Generate Message", "err": "Please check input fields and API key.", "wait": "Analyzing & generating...", "res": "Generated Message:", "footer": "© 2026 LeadAK. All rights reserved."}
 
 API_KEY = os.getenv("GEMINI_API_KEY")
 
-st.markdown(f"<div class='brand-title'>{T['title']}</div>", unsafe_allow_html=True)
+st.markdown(f"""
+    <div class='brand-header'>
+        <div class='brand-logo'>⚡ LeadAK</div>
+    </div>
+""", unsafe_allow_html=True)
+
+st.markdown(f"<h2 style='text-align: center; color: #1E1B4B; font-weight: 600;'>{T['heading']}</h2>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: #64748B; margin-bottom: 2rem;'>{T['subheading']}</p>", unsafe_allow_html=True)
 
 target_name = st.text_input(T["target"], placeholder=T["target_ph"])
 industry = st.text_input(T["ind"], placeholder=T["ind_ph"])
-post_content = st.text_area(T["post"], placeholder=T["post_ph"], height=90)
-
-with st.expander(T["adv"]):
-    col1, col2 = st.columns(2)
-    with col1:
-        tone = st.selectbox(T["tone"], T["tones"])
-    with col2:
-        platform = st.selectbox(T["platform"], T["platforms"])
+post_content = st.text_area(T["post"], placeholder=T["post_ph"], height=120)
+st.markdown(f"<p style='color: #94A3B8; font-size: 12px; margin-top: -10px; margin-bottom: 1.5rem;'>{T['post_sub']}</p>", unsafe_allow_html=True)
 
 def get_working_model(api_key):
     try:
@@ -66,7 +66,7 @@ if st.button(T["btn"]):
         with st.spinner(T["wait"]):
             model_name = get_working_model(API_KEY)
             output_lang = "Arabic" if lang == "العربية" else "English"
-            prompt = f'''You are a senior B2B Sales Specialist. Write a highly personalized, concise outreach message. Target: {target_name}. Industry: {industry}. Context/Activity: {post_content}. Tone: {tone}. Channel: {platform}. Language: {output_lang}. Rules: No emojis. Keep it highly professional, clean, and minimalist. Mention their context naturally. End with a simple CTA. Provide ONLY the message text.'''
+            prompt = f'''You are a senior B2B Sales Specialist. Write a highly personalized, concise outreach message. Target: {target_name}. Industry: {industry}. Context/Activity: {post_content}. Language: {output_lang}. Rules: No emojis. Keep it highly professional, clean, and minimalist. Mention their context naturally. End with a simple CTA. Provide ONLY the message text.'''
             
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={API_KEY}"
             payload = {"contents": [{"parts": [{"text": prompt}]}]}
@@ -76,7 +76,7 @@ if st.button(T["btn"]):
                     ans = res.json()['candidates'][0]['content']['parts'][0]['text']
                     st.text_area(T["res"], value=ans, height=180)
                 else:
-                    st.error(f"Error connecting to model {model_name}. Code: {res.status_code}")
+                    st.error(f"Error connecting to model. Code: {res.status_code}")
             except Exception:
                 st.error("Connection failed.")
 
