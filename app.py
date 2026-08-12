@@ -1,95 +1,49 @@
 import os
 import requests
 import streamlit as st
+import base64
 
-st.set_page_config(page_title="LeadAK", layout="centered", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="LeadAK", layout="centered")
 
 st.markdown("""
     <style>
-    .stApp { background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 15px; }
-    .logo-area { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; color: #1E1B4B; }
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea { background-color: #FFFFFF !important; color: #1E1B4B !important; border: 1px solid #CBD5E1 !important; border-radius: 8px !important; padding: 12px !important; }
-    .stButton>button { width: 100%; background-color: #3730A3; color: #FFFFFF; font-weight: 600; border-radius: 8px; height: 3.4em; border: none; transition: 0.2s; }
-    .stButton>button:hover { background-color: #312E81; color: #FFFFFF; }
-    .footer-note { text-align: center; color: #94A3B8; font-size: 12px; margin-top: 3rem; border-top: 1px solid #E2E8F0; padding-top: 15px; }
+    .stApp { background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 10px; }
+    .brand { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #1E1B4B; }
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea { border-radius: 10px !important; border: 1px solid #E2E8F0 !important; background: #F8FAFC !important; }
+    .stButton>button { width: 100%; background-color: #3730A3 !important; color: white !important; border-radius: 10px !important; font-weight: 600; height: 3.5em; }
     </style>
 """, unsafe_allow_html=True)
 
 API_KEY = os.getenv("GEMINI_API_KEY")
+st.markdown('<div class="header-box"><div class="brand"><span>🔀</span> LeadAK</div>', unsafe_allow_html=True)
+lang = st.radio("L", ["Arabic", "English"], horizontal=True, label_visibility="collapsed")
+st.markdown('</div>', unsafe_allow_html=True)
 
-col_logo, col_lang = st.columns([3, 2])
-with col_logo:
-    st.markdown("<div class='logo-area'><span style='color:#3730A3;'>🔀</span> LeadAK</div>", unsafe_allow_html=True)
-with col_lang:
-    lang = st.radio("Language", ["English", "العربية"], horizontal=True, label_visibility="collapsed")
-
-if lang == "العربية":
-    T = {
-        "heading": "أنشئ رسالة تحقق التحويل المستهدف",
-        "subheading": "أدخل بعض التفاصيل وسيقوم الذكاء الاصطناعي بصياغة الرسالة المثالية لجمهورك.",
-        "target": "الجهة المستهدفة", "target_ph": "اسم الشخص أو الشركة المستهدفة",
-        "ind": "مجال العمل / المنتج / الخدمة", "ind_ph": "مثال: التطوير العقاري أو SaaS",
-        "post": "النشاط أو المنشور الأخير للعميل", "post_ph": "الصق منشور العميل الأخير هنا...",
-        "post_sub": "سيقوم الذكاء الاصطناعي بتحليل المنشور وإنشاء رسالة مخصصة.",
-        "btn": "إنشاء الرسالة", "err": "يرجى إدخال البيانات المطلوبة وتأكد من المفتاح.", 
-        "wait": "جاري التحليل والإنشاء...", "res": "النتيجة النهائية:", "footer": "© 2026 LeadAK. All rights reserved."
-    }
+if lang == "Arabic":
+    T = {"head": "أنشئ رسالة تحقق التحويل", "sub": "أدخل التفاصيل وسأصيغ لك الرسالة المثالية.", "target": "الجهة المستهدفة", "ind": "الشركة / الخدمة", "post": "منشور العميل أو صورة (سكرين شوت)", "btn": "إنشاء الرسالة"}
 else:
-    T = {
-        "heading": "Generate a Message That Converts",
-        "subheading": "Provide a few details and AI will craft the perfect message for your audience.",
-        "target": "Your Name / Target", "target_ph": "Your Name",
-        "ind": "Company / Product / Service", "ind_ph": "Company / Product / Service",
-        "post": "Client's Latest Post", "post_ph": "Paste the client's latest post here...",
-        "post_sub": "AI will analyze this post and create a personalized message.",
-        "btn": "Generate Message", "err": "Please check input fields and API key.", 
-        "wait": "Analyzing & generating...", "res": "Generated Message:", "footer": "© 2026 LeadAK. All rights reserved."
-    }
+    T = {"head": "Generate a Message That Converts", "sub": "Provide a few details and I will craft the perfect message.", "target": "Target Name", "ind": "Company / Product / Service", "post": "Client's Latest Post or Screenshot", "btn": "Generate Message"}
 
-st.markdown(f"<h2 style='text-align: center; color: #1E1B4B; font-weight: 700; font-size: 28px;'>{T['heading']}</h2>", unsafe_allow_html=True)
-st.markdown(f"<p style='text-align: center; color: #64748B; margin-bottom: 2.5rem; font-size: 15px;'>{T['subheading']}</p>", unsafe_allow_html=True)
+st.markdown(f"<h1 style='text-align: center; color: #1E1B4B;'>{T['head']}</h1>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: #64748B;'>{T['sub']}</p>", unsafe_allow_html=True)
 
-target_name = st.text_input(T["target"], placeholder=T["target_ph"], label_visibility="collapsed")
-industry = st.text_input(T["ind"], placeholder=T["ind_ph"], label_visibility="collapsed")
-post_content = st.text_area(T["post"], placeholder=T["post_ph"], height=130, label_visibility="collapsed")
-st.markdown(f"<p style='color: #64748B; font-size: 12px; margin-top: 5px; margin-bottom: 2rem;'>{T['post_sub']}</p>", unsafe_allow_html=True)
-
-def get_working_model(api_key):
-    try:
-        list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
-        res = requests.get(list_url, timeout=10)
-        if res.status_code == 200:
-            models = res.json().get("models", [])
-            for m in models:
-                if "generateContent" in m.get("supportedGenerationMethods", []) and "flash" in m.get("name", ""):
-                    return m.get("name", "").replace("models/", "")
-            for m in models:
-                if "generateContent" in m.get("supportedGenerationMethods", []):
-                    return m.get("name", "").replace("models/", "")
-    except Exception:
-        pass
-    return "gemini-1.5-flash"
+target = st.text_input(T["target"], placeholder="Name...")
+company = st.text_input(T["ind"], placeholder="Service...")
+post_text = st.text_area(T["post"], placeholder="Paste text or upload image below...")
+uploaded_img = st.file_uploader("", type=["jpg", "png"], label_visibility="collapsed")
 
 if st.button(T["btn"]):
-    if not API_KEY or not target_name or not post_content:
-        st.error(T["err"])
+    if not API_KEY: st.error("API Key missing.")
     else:
-        with st.spinner(T["wait"]):
-            model_name = get_working_model(API_KEY)
-            output_lang = "Arabic" if lang == "العربية" else "English"
-            prompt = f'''You are a senior B2B Sales Specialist. Write a highly personalized, concise outreach message. Target: {target_name}. Industry: {industry}. Context/Activity: {post_content}. Language: {output_lang}. Rules: No emojis. Keep it highly professional, clean, and minimalist. Mention their context naturally. End with a simple CTA. Provide ONLY the message text.'''
-            
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={API_KEY}"
-            payload = {"contents": [{"parts": [{"text": prompt}]}]}
-            try:
-                res = requests.post(url, json=payload, timeout=45)
-                if res.status_code == 200:
-                    ans = res.json()['candidates'][0]['content']['parts'][0]['text']
-                    st.text_area(T["res"], value=ans, height=180)
-                else:
-                    st.error(f"Error connecting. Code: {res.status_code}")
-            except Exception:
-                st.error("Connection failed.")
+        with st.spinner("Analyzing..."):
+            model = "gemini-1.5-flash"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={API_KEY}"
+            parts = [{"text": f"Target: {target}, Company: {company}, Text: {post_text}. Write a professional outreach message."}]
+            if uploaded_img:
+                img_data = base64.b64encode(uploaded_img.getvalue()).decode()
+                parts.append({"inline_data": {"mime_type": "image/jpeg", "data": img_data}})
+            res = requests.post(url, json={"contents": [{"parts": parts}]})
+            if res.status_code == 200:
+                st.text_area("Result:", value=res.json()['candidates'][0]['content']['parts'][0]['text'], height=200)
 
-st.markdown(f"<div class='footer-note'>{T['footer']}</div>", unsafe_allow_html=True)
