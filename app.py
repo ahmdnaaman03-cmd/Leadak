@@ -7,36 +7,22 @@ st.set_page_config(page_title="LeadAK", layout="centered", initial_sidebar_state
 st.markdown("""
     <style>
     .stApp { background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    
-    /* تنسيق الهيدر المتجاوب للشاشات الكبيرة والموبايل */
-    .header-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #E2E8F0;
-        padding-bottom: 15px;
-        margin-bottom: 2.5rem;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
+    .header-container { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 15px; margin-bottom: 2.5rem; flex-wrap: wrap; gap: 15px; }
     .logo-area { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 700; color: #1E1B4B; }
-    
-    /* تنسيق حقول الإدخال والأزرار لتطابق التصميم بدقة */
-    .stTextInput>div>div>input, .stTextArea>div>div>textarea { 
-        background-color: #FFFFFF !important; 
-        color: #1E1B4B !important; 
-        border: 1px solid #CBD5E1 !important; 
-        border-radius: 8px !important; 
-        padding: 12px !important;
-    }
-    .stButton>button {
-        width: 100%; background-color: #3730A3; color: #FFFFFF; 
-        font-weight: 600; border-radius: 8px; height: 3.4em; border: none; transition: 0.2s;
-    }
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea { background-color: #FFFFFF !important; color: #1E1B4B !important; border: 1px solid #CBD5E1 !important; border-radius: 8px !important; padding: 12px !important; }
+    .stButton>button { width: 100%; background-color: #3730A3; color: #FFFFFF; font-weight: 600; border-radius: 8px; height: 3.4em; border: none; transition: 0.2s; }
     .stButton>button:hover { background-color: #312E81; color: #FFFFFF; }
     .footer-note { text-align: center; color: #94A3B8; font-size: 12px; margin-top: 3rem; border-top: 1px solid #E2E8F0; padding-top: 15px; }
     </style>
 """, unsafe_allow_html=True)
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+col_logo, col_lang = st.columns([3, 2])
+with col_logo:
+    st.markdown("<div class='logo-area'><span style='color:#3730A3;'>🔀</span> LeadAK</div>", unsafe_allow_html=True)
+with col_lang:
+    lang = st.radio("Language", ["English", "العربية"], horizontal=True, label_visibility="collapsed")
 
 if lang == "العربية":
     T = {
