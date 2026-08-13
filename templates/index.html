@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadAK - Message Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        [contenteditable]:empty:before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; display: block; }
+        #post-input img { max-width: 100%; border-radius: 0.5rem; margin: 0.5rem 0; display: block; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #ffffff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-lg w-full max-w-5xl p-6 sm:p-12 border border-gray-100">
+        <header class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-2">
+                <svg width="40" height="32" viewBox="0 0 40 32" fill="none"><path d="M12.5 4L22.5 16L12.5 28" stroke="#1E1B4B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M22.5 10L28.5 16L22.5 22" stroke="#4338CA" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-3xl font-semibold text-[#2e1065] tracking-tight">LeadAK</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600 gap-4">
+                <div class="flex items-center gap-2 cursor-pointer"><div class="w-3 h-3 rounded-full bg-red-500"></div><span>Arabic</span></div>
+                <div class="w-px h-4 bg-gray-300"></div>
+                <div class="flex items-center gap-2 cursor-pointer"><div class="w-3 h-3 rounded-full bg-black"></div><span>English</span></div>
+            </div>
+        </header>
+        <main class="max-w-xl mx-auto flex flex-col gap-6">
+            <div class="text-center mb-4">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-3">Generate a Message That Converts</h1>
+                <p class="text-gray-500 text-sm">Provide a few details and I will craft the perfect message for your audience.</p>
+            </div>
+            <div class="relative">
+                <input type="text" id="client-name" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc]">
+            </div>
+            <div class="relative">
+                <input type="text" id="client-service" placeholder="Company / Product / Service" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc]">
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-gray-700">Client's Latest Post</label>
+                <div class="relative">
+                    <div id="post-input" contenteditable="true" data-placeholder="Paste the client's latest post here (Text or Image)..." class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] min-h-[160px] text-gray-700 overflow-y-auto"></div>
+                </div>
+            </div>
+            <button id="generate-btn" class="w-full bg-[#3b28cc] hover:bg-[#311b92] text-white font-medium py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all mt-4">
+                <span id="btn-text">Generate Message</span>
+                <div id="btn-loader" class="loader"></div>
+            </button>
+            
+            <div id="result-container" class="hidden mt-6 p-6 bg-gray-50 border border-gray-200 rounded-xl">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Generated Message:</h3>
+                <p id="result-text" class="text-gray-800 whitespace-pre-wrap select-all"></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        const postInput = document.getElementById('post-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const resultContainer = document.getElementById('result-container');
+        const resultText = document.getElementById('result-text');
+
+        postInput.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || window.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const file = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        insertAtCaret(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (items[i].type === 'text/plain') {
+                    e.preventDefault();
+                    const text = e.clipboardData.getData('text/plain');
+                    insertAtCaret(document.createTextNode(text));
+                }
+            }
+        });
+
+        function insertAtCaret(node) {
+            const sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                let range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(node);
+                range = range.cloneRange();
+                range.setStartAfter(node);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                postInput.appendChild(node);
+            }
+        }
+        generateBtn.addEventListener('click', async () => {
+            const name = document.getElementById('client-name').value;
+            const service = document.getElementById('client-service').value;
+            
+            if (!name || !service || postInput.innerText.trim() === '') {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            let combinedContent = postInput.innerText + "\n";
+            const images = postInput.querySelectorAll('img');
+            images.forEach((img, index) => {
+                combinedContent += `\n[Image Data: ${img.src}]\n`; 
+            });
+
+            generateBtn.disabled = true;
+            btnText.innerText = "Generating...";
+            btnLoader.style.display = "block";
+            resultContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_name: name,
+                        service: service,
+                        post_content: combinedContent
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    resultText.innerText = data.message;
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (error) {
+                alert("Connection error.");
+            } finally {
+                generateBtn.disabled = false;
+                btnText.innerText = "Generate Message";
+                btnLoader.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
