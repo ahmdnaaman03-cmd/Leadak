@@ -1,4 +1,4 @@
-# Leadak B2B Auto-Pitcher (Aman Al-Mandoob Engine)
+# Leadak B2B Auto-Pitcher 
 
 An automated Python utility designed to generate highly targeted B2B marketing DMs and solve operational workflows for businesses. Features dynamic self-discovery of working AI models and clean JSON parsing.
 
