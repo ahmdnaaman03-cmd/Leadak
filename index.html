@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadAK - Message Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            pointer-events: none;
+            display: block;
+        }
+        #post-input img {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-lg w-full max-w-5xl p-6 sm:p-12 border border-gray-100">
+        <header class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-2">
+                <svg width="40" height="32" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 4L22.5 16L12.5 28" stroke="#1E1B4B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[#2e1065]"/>
+                    <path d="M22.5 10L28.5 16L22.5 22" stroke="#4338CA" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-3xl font-semibold text-[#2e1065] tracking-tight">LeadAK</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600 gap-4">
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span>Arabic</span>
+                </div>
+                <div class="w-px h-4 bg-gray-300"></div>
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-3 h-3 rounded-full bg-black"></div>
+                    <span>English</span>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-xl mx-auto flex flex-col gap-6">
+            <div class="text-center mb-4">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-3">Generate a Message That Converts</h1>
+                <p class="text-gray-500 text-sm">Provide a few details and I will craft the perfect message for your audience.</p>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Your Name" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] focus:border-transparent transition-all">
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Company / Product / Service" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] focus:border-transparent transition-all">
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-gray-700">Client's Latest Post</label>
+                <div class="relative">
+                    <div id="post-input" contenteditable="true" data-placeholder="Paste the client's latest post here..." class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] focus:border-transparent transition-all min-h-[160px] text-gray-700 overflow-y-auto resize-y"></div>
+                    <div class="absolute bottom-2 right-2 pointer-events-none">
+                        <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM14 22H12V20H14V22Z" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">AI will analyze this post and create a personalized message.</p>
+            </div>
+            <button class="w-full bg-[#3b28cc] hover:bg-[#311b92] text-white font-medium py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all mt-4">
+                <svg class="w-5 h-5 transform -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Generate Message
+            </button>
+        </main>
+    </div>
+    <script>
+        const postInput = document.getElementById('post-input');
+        postInput.addEventListener('paste', function(e) {
+            const clipboardData = e.clipboardData || window.clipboardData;
+            const items = clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const file = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        insertAtCaret(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (items[i].type === 'text/plain') {
+                    e.preventDefault();
+                    const text = clipboardData.getData('text/plain');
+                    insertAtCaret(document.createTextNode(text));
+                }
+            }
+        });
+        function insertAtCaret(node) {
+            const sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                let range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(node);
+                range = range.cloneRange();
+                range.setStartAfter(node);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                postInput.appendChild(node);
+            }
+        }
+    </script>
+</body>
+</html>
