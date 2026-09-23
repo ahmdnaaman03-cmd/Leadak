@@ -13,17 +13,15 @@ def get_working_model(api_key):
         res = requests.get(list_url, timeout=15)
         if res.status_code == 200:
             for m in res.json().get('models', []):
-                name = m.get('name', '')
-                if 'gemini-1.5' in name.lower() and 'generateContent' in m.get('supportedGenerationMethods', []):
-                    return name if name.startswith("models/") else f"models/{name}"
-            # في حال لم يجد 1.5 يجلب أي نموذج gemini داعم
-            for m in res.json().get('models', []):
-                name = m.get('name', '')
-                if 'gemini' in name.lower() and 'generateContent' in m.get('supportedGenerationMethods', []):
+                # نختار أول نموذج متاح يدعم توليد النصوص مباشرة بدون التدقيق في اسمه
+                if 'generateContent' in m.get('supportedGenerationMethods', []):
+                    name = m.get('name', '')
                     return name if name.startswith("models/") else f"models/{name}"
     except Exception as e:
-        logging.error(f"خطأ في فحص النماذج: {e}")
-    return "models/gemini-1.5-flash-latest" # قيمة افتراضية
+        logging.error(f"خطأ في جلب قائمة النماذج: {e}")
+    
+    # خيار احتياطي أخير في أسوأ الحالات
+    return "models/gemini-1.5-flash"
 
 def generate_email(name, industry, pain_point):
     api_key = os.getenv("GEMINI_API_KEY")
@@ -32,6 +30,7 @@ def generate_email(name, industry, pain_point):
         return None
         
     model_name = get_working_model(api_key)
+    logging.info(f"النموذج المستخدم حالياً: {model_name}")
     url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={api_key}"
     
     prompt = f'اكتب رسالة B2B لـ {name} مجال {industry} يعاني من {pain_point}. أجب بـ JSON فقط: {{"subject":"العنوان", "body":"النص"}}'
