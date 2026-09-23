@@ -8,20 +8,31 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 def get_working_model(api_key):
+    if not api_key:
+        return "models/gemma-2-2b-it"
+        
     list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
     try:
         res = requests.get(list_url, timeout=15)
         if res.status_code == 200:
-            for m in res.json().get('models', []):
-                # نختار أول نموذج متاح يدعم توليد النصوص مباشرة بدون التدقيق في اسمه
+            models = res.json().get('models', [])
+            
+            # 1. البحث عن نماذج جيما أولاً
+            for m in models:
+                name = m.get('name', '')
+                if 'gemma' in name.lower() and 'generateContent' in m.get('supportedGenerationMethods', []):
+                    return name if name.startswith("models/") else f"models/{name}"
+            
+            # 2. البحث عن أي نموذج متاح كخيار بديل
+            for m in models:
                 if 'generateContent' in m.get('supportedGenerationMethods', []):
                     name = m.get('name', '')
                     return name if name.startswith("models/") else f"models/{name}"
     except Exception as e:
         logging.error(f"خطأ في جلب قائمة النماذج: {e}")
-    
-    # خيار احتياطي أخير في أسوأ الحالات
-    return "models/gemini-1.5-flash"
+        
+    # الخيار الافتراضي المستقر
+    return "models/gemma-2-2b-it"
 
 def generate_email(name, industry, pain_point):
     api_key = os.getenv("GEMINI_API_KEY")
