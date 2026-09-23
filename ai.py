@@ -8,30 +8,27 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 def get_working_model(api_key):
-    if not api_key:
-        return "models/gemma-2-2b-it"
-        
     list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}"
     try:
         res = requests.get(list_url, timeout=15)
         if res.status_code == 200:
             models = res.json().get('models', [])
             
-            # 1. البحث عن نماذج جيما أولاً
+            # 1. إعطاء الأولوية القصوى لنماذج Gemma
             for m in models:
                 name = m.get('name', '')
                 if 'gemma' in name.lower() and 'generateContent' in m.get('supportedGenerationMethods', []):
                     return name if name.startswith("models/") else f"models/{name}"
             
-            # 2. البحث عن أي نموذج متاح كخيار بديل
+            # 2. خيار بديل: أي نموذج متاح غير 2.5
             for m in models:
-                if 'generateContent' in m.get('supportedGenerationMethods', []):
-                    name = m.get('name', '')
+                name = m.get('name', '')
+                if 'generateContent' in m.get('supportedGenerationMethods', []) and '2.5' not in name:
                     return name if name.startswith("models/") else f"models/{name}"
     except Exception as e:
         logging.error(f"خطأ في جلب قائمة النماذج: {e}")
-        
-    # الخيار الافتراضي المستقر
+    
+    # القيمة الافتراضية الثابتة لنماذج جيما
     return "models/gemma-2-2b-it"
 
 def generate_email(name, industry, pain_point):
