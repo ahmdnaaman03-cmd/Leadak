@@ -1,0 +1,483 @@
+========================================
+File: ./index.html
+========================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadAK - Message Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        [contenteditable]:empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            pointer-events: none;
+            display: block;
+        }
+        #post-input img {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-lg w-full max-w-5xl p-6 sm:p-12 border border-gray-100">
+        <header class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-2">
+                <svg width="40" height="32" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.5 4L22.5 16L12.5 28" stroke="#1E1B4B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="stroke-[#2e1065]"/>
+                    <path d="M22.5 10L28.5 16L22.5 22" stroke="#4338CA" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="text-3xl font-semibold text-[#2e1065] tracking-tight">LeadAK</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600 gap-4">
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span>Arabic</span>
+                </div>
+                <div class="w-px h-4 bg-gray-300"></div>
+                <div class="flex items-center gap-2 cursor-pointer">
+                    <div class="w-3 h-3 rounded-full bg-black"></div>
+                    <span>English</span>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-xl mx-auto flex flex-col gap-6">
+            <div class="text-center mb-4">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-3">Generate a Message That Converts</h1>
+                <p class="text-gray-500 text-sm">Provide a few details and I will craft the perfect message for your audience.</p>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Your Name" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] focus:border-transparent transition-all">
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <input type="text" placeholder="Company / Product / Service" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] focus:border-transparent transition-all">
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-gray-700">Client's Latest Post</label>
+                <div class="relative">
+                    <div id="post-input" contenteditable="true" data-placeholder="Paste the client's latest post here..." class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] focus:border-transparent transition-all min-h-[160px] text-gray-700 overflow-y-auto resize-y"></div>
+                    <div class="absolute bottom-2 right-2 pointer-events-none">
+                        <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM14 22H12V20H14V22Z" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">AI will analyze this post and create a personalized message.</p>
+            </div>
+            <button class="w-full bg-[#3b28cc] hover:bg-[#311b92] text-white font-medium py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all mt-4">
+                <svg class="w-5 h-5 transform -rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                Generate Message
+            </button>
+        </main>
+    </div>
+    <script>
+        const postInput = document.getElementById('post-input');
+        postInput.addEventListener('paste', function(e) {
+            const clipboardData = e.clipboardData || window.clipboardData;
+            const items = clipboardData.items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const file = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        insertAtCaret(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (items[i].type === 'text/plain') {
+                    e.preventDefault();
+                    const text = clipboardData.getData('text/plain');
+                    insertAtCaret(document.createTextNode(text));
+                }
+            }
+        });
+        function insertAtCaret(node) {
+            const sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                let range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(node);
+                range = range.cloneRange();
+                range.setStartAfter(node);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                postInput.appendChild(node);
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+========================================
+File: ./leadak_batch.py
+========================================
+import requests
+import json
+import os
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+def get_working_model():
+    if not API_KEY:
+        print("❌ خطأ: متغير البيئة GEMINI_API_KEY غير موجود.")
+        return None
+    list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={API_KEY}"
+    try:
+        res = requests.get(list_url)
+        if res.status_code == 200:
+            for m in res.json().get('models', []):
+                if 'generateContent' in m.get('supportedGenerationMethods', []):
+                    model_name = m['name']
+                    test_url = f"https://generativelanguage.googleapis.com/v1beta/{model_name}:generateContent?key={API_KEY}"
+                    test_res = requests.post(test_url, headers={'Content-Type': 'application/json'}, data=json.dumps({"contents": [{"parts": [{"text": "مرحبا"}]}]}))
+                    if test_res.status_code == 200:
+                        return model_name
+    except Exception:
+        pass
+    return None
+
+def process_batch():
+    MODEL_NAME = get_working_model()
+    if not MODEL_NAME:
+        return
+    URL = f"https://generativelanguage.googleapis.com/v1beta/{MODEL_NAME}:generateContent?key={API_KEY}"
+    
+    if not os.path.exists("leads_input.txt"):
+        return
+
+    with open("leads_input.txt", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    for line in lines:
+        if "|" in line:
+            parts = line.strip().split("|")
+            name, ind, post = parts[0].strip(), parts[1].strip(), parts[2].strip()
+            prompt = f'اكتب رسالة B2B للعميل {name} في مجال {ind} يعاني من: {post}. أجب بـ JSON فقط بهذه الصيغة: {{"message": "النص"}}'
+            res = requests.post(URL, headers={'Content-Type': 'application/json'}, data=json.dumps({"contents": [{"parts": [{"text": prompt}]}]}))
+            if res.status_code == 200:
+                try:
+                    ans = res.json()['candidates'][0]['content']['parts'][0]['text']
+                    clean_ans = ans.replace("```json", "").replace("```", "").strip()
+                    print(json.loads(clean_ans).get("message", clean_ans))
+                except:
+                    print(ans)
+
+if __name__ == "__main__":
+    process_batch()
+
+
+
+========================================
+File: ./app.py
+========================================
+import os
+import requests
+import streamlit as st
+import base64
+
+st.set_page_config(page_title="LeadAK", layout="centered")
+
+st.markdown("""
+    <style>
+    .stApp { background-color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .header-box { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding: 0 10px; }
+    .brand { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 800; color: #1E1B4B; }
+    .stTextInput>div>div>input, .stTextArea>div>div>textarea { border-radius: 10px !important; border: 1px solid #E2E8F0 !important; background: #F8FAFC !important; }
+    .stButton>button { width: 100%; background-color: #3730A3 !important; color: white !important; border-radius: 10px !important; font-weight: 600; height: 3.5em; }
+    </style>
+""", unsafe_allow_html=True)
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+st.markdown('<div class="header-box"><div class="brand"><span>🔀</span> LeadAK</div>', unsafe_allow_html=True)
+lang = st.radio("L", ["Arabic", "English"], horizontal=True, label_visibility="collapsed")
+st.markdown('</div>', unsafe_allow_html=True)
+
+if lang == "Arabic":
+    T = {"head": "أنشئ رسالة تحقق التحويل", "sub": "أدخل التفاصيل وسأصيغ لك الرسالة المثالية.", "target": "الجهة المستهدفة", "ind": "الشركة / الخدمة", "post": "منشور العميل أو صورة (سكرين شوت)", "btn": "إنشاء الرسالة"}
+else:
+    T = {"head": "Generate a Message That Converts", "sub": "Provide a few details and I will craft the perfect message.", "target": "Target Name", "ind": "Company / Product / Service", "post": "Client's Latest Post or Screenshot", "btn": "Generate Message"}
+
+st.markdown(f"<h1 style='text-align: center; color: #1E1B4B;'>{T['head']}</h1>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center; color: #64748B;'>{T['sub']}</p>", unsafe_allow_html=True)
+
+target = st.text_input(T["target"], placeholder="Name...")
+company = st.text_input(T["ind"], placeholder="Service...")
+post_text = st.text_area(T["post"], placeholder="Paste text or upload image below...")
+uploaded_img = st.file_uploader("", type=["jpg", "png"], label_visibility="collapsed")
+
+if st.button(T["btn"]):
+    if not API_KEY: st.error("API Key missing.")
+    else:
+        with st.spinner("Analyzing..."):
+            model = "gemini-1.5-flash"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={API_KEY}"
+            parts = [{"text": f"Target: {target}, Company: {company}, Text: {post_text}. Write a professional outreach message."}]
+            if uploaded_img:
+                img_data = base64.b64encode(uploaded_img.getvalue()).decode()
+                parts.append({"inline_data": {"mime_type": "image/jpeg", "data": img_data}})
+            res = requests.post(url, json={"contents": [{"parts": parts}]})
+            if res.status_code == 200:
+                st.text_area("Result:", value=res.json()['candidates'][0]['content']['parts'][0]['text'], height=200)
+
+
+
+
+========================================
+File: ./templates/index.html
+========================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadAK - Message Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        [contenteditable]:empty:before { content: attr(data-placeholder); color: #9ca3af; pointer-events: none; display: block; }
+        #post-input img { max-width: 100%; border-radius: 0.5rem; margin: 0.5rem 0; display: block; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #ffffff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-lg w-full max-w-5xl p-6 sm:p-12 border border-gray-100">
+        <header class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-2">
+                <svg width="40" height="32" viewBox="0 0 40 32" fill="none"><path d="M12.5 4L22.5 16L12.5 28" stroke="#1E1B4B" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M22.5 10L28.5 16L22.5 22" stroke="#4338CA" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-3xl font-semibold text-[#2e1065] tracking-tight">LeadAK</span>
+            </div>
+            <div class="flex items-center text-sm text-gray-600 gap-4">
+                <div class="flex items-center gap-2 cursor-pointer"><div class="w-3 h-3 rounded-full bg-red-500"></div><span>Arabic</span></div>
+                <div class="w-px h-4 bg-gray-300"></div>
+                <div class="flex items-center gap-2 cursor-pointer"><div class="w-3 h-3 rounded-full bg-black"></div><span>English</span></div>
+            </div>
+        </header>
+        <main class="max-w-xl mx-auto flex flex-col gap-6">
+            <div class="text-center mb-4">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-3">Generate a Message That Converts</h1>
+                <p class="text-gray-500 text-sm">Provide a few details and I will craft the perfect message for your audience.</p>
+            </div>
+            <div class="relative">
+                <input type="text" id="client-name" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc]">
+            </div>
+            <div class="relative">
+                <input type="text" id="client-service" placeholder="Company / Product / Service" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc]">
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-gray-700">Client's Latest Post</label>
+                <div class="relative">
+                    <div id="post-input" contenteditable="true" data-placeholder="Paste the client's latest post here (Text or Image)..." class="w-full p-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#3b28cc] min-h-[160px] text-gray-700 overflow-y-auto"></div>
+                </div>
+            </div>
+            <button id="generate-btn" class="w-full bg-[#3b28cc] hover:bg-[#311b92] text-white font-medium py-4 px-6 rounded-xl flex items-center justify-center gap-2 transition-all mt-4">
+                <span id="btn-text">Generate Message</span>
+                <div id="btn-loader" class="loader"></div>
+            </button>
+            
+            <div id="result-container" class="hidden mt-6 p-6 bg-gray-50 border border-gray-200 rounded-xl">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Generated Message:</h3>
+                <p id="result-text" class="text-gray-800 whitespace-pre-wrap select-all"></p>
+            </div>
+        </main>
+    </div>
+    <script>
+        const postInput = document.getElementById('post-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const resultContainer = document.getElementById('result-container');
+        const resultText = document.getElementById('result-text');
+
+        postInput.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || window.clipboardData).items;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const file = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.createElement('img');
+                        img.src = event.target.result;
+                        insertAtCaret(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else if (items[i].type === 'text/plain') {
+                    e.preventDefault();
+                    const text = e.clipboardData.getData('text/plain');
+                    insertAtCaret(document.createTextNode(text));
+                }
+            }
+        });
+
+        function insertAtCaret(node) {
+            const sel = window.getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                let range = sel.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(node);
+                range = range.cloneRange();
+                range.setStartAfter(node);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                postInput.appendChild(node);
+            }
+        }
+        generateBtn.addEventListener('click', async () => {
+            const name = document.getElementById('client-name').value;
+            const service = document.getElementById('client-service').value;
+            
+            if (!name || !service || postInput.innerText.trim() === '') {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            let combinedContent = postInput.innerText + "\n";
+            const images = postInput.querySelectorAll('img');
+            images.forEach((img, index) => {
+                combinedContent += `\n[Image Data: ${img.src}]\n`; 
+            });
+
+            generateBtn.disabled = true;
+            btnText.innerText = "Generating...";
+            btnLoader.style.display = "block";
+            resultContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        client_name: name,
+                        service: service,
+                        post_content: combinedContent
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    resultText.innerText = data.message;
+                    resultContainer.classList.remove('hidden');
+                } else {
+                    alert("Error: " + data.message);
+                }
+            } catch (error) {
+                alert("Connection error.");
+            } finally {
+                generateBtn.disabled = false;
+                btnText.innerText = "Generate Message";
+                btnLoader.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+========================================
+File: ./leadak.py
+========================================
+import os
+import json
+import requests
+
+API_KEY = os.getenv("GEMINI_API_KEY")
+
+def get_working_model():
+    if not API_KEY:
+        return "models/gemma-2-2b-it"
+    list_url = f"https://generativelanguage.googleapis.com/v1beta/models?key={API_KEY}"
+    try:
+        res = requests.get(list_url, timeout=15)
+        if res.status_code == 200:
+            models = res.json().get('models', [])
+            for m in models:
+                name = m.get('name', '')
+                if 'gemma' in name.lower() and 'generateContent' in m.get('supportedGenerationMethods', []):
+                    return name if name.startswith("models/") else f"models/{name}"
+            for m in models:
+                if 'generateContent' in m.get('supportedGenerationMethods', []):
+                    name = m.get('name', '')
+                    return name if name.startswith("models/") else f"models/{name}"
+    except Exception:
+        pass
+    return "models/gemma-2-2b-it"
+
+def main():
+    print("=" * 30)
+    print("       LEADAK - GEMMA")
+    print("=" * 30)
+    
+    if not API_KEY:
+        print("\n[خطأ]: مفتاح البيئة غير موجود.")
+        return
+
+    company_name = input("\nاسم الشركة: ").strip()
+    if not company_name:
+        return
+
+    industry = input("المجال: ").strip()
+    if not industry:
+        return
+
+    recent_post = input("نقطة الألم (اختياري): ").strip()
+
+    print("\n[جاري فحص النماذج والاتصال...]")
+    MODEL_NAME = get_working_model()
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/{MODEL_NAME}:generateContent?key={API_KEY}"
+    prompt = f"للعميل B2B اكتب رسالة احترافية للشركة {company_name} تعاني من {recent_post} في مجال {industry}."
+    
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    
+    try:
+        res = requests.post(url, json=payload, timeout=45)
+        if res.status_code == 200:
+            ans = res.json()['candidates'][0]['content']['parts'][0]['text']
+            clean = ans.replace("```json", "").replace("```", "").strip()
+            
+            try:
+                data = json.loads(clean)
+                msg = data.get("message", clean)
+            except:
+                msg = clean  # عرض النص مباشرة إذا لم يكن JSON
+
+            print("\n" + "=" * 30)
+            print(msg)
+            print("=" * 30)
+        else:
+            print(f"\n[خطأ]: {res.status_code} - {res.text}")
+    except Exception as e:
+        print(f"\n[خطأ في الاتصال]: {str(e)}")
+
+if __name__ == "__main__":
+    main()
+
+
+
